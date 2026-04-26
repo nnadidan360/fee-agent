@@ -9,7 +9,7 @@ export const MIGRATIONS_DIR = join(__dirname, 'migrations');
 
 export async function runMigrations(pool: Pool): Promise<void> {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
+    CREATE TABLE IF NOT EXISTS fee_agent_migrations (
       version    TEXT PRIMARY KEY,
       applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
@@ -23,7 +23,7 @@ export async function runMigrations(pool: Pool): Promise<void> {
     const version = file.replace('.sql', '');
 
     const { rowCount } = await pool.query(
-      'SELECT 1 FROM schema_migrations WHERE version = $1',
+      'SELECT 1 FROM fee_agent_migrations WHERE version = $1',
       [version]
     );
 
@@ -37,7 +37,7 @@ export async function runMigrations(pool: Pool): Promise<void> {
     try {
       await pool.query(sql);
       await pool.query(
-        'INSERT INTO schema_migrations (version) VALUES ($1)',
+        'INSERT INTO fee_agent_migrations (version) VALUES ($1)',
         [version]
       );
       await pool.query('COMMIT');
